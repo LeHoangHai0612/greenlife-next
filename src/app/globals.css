@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Bảng màu andtea-style: nền kem gần trắng, mực gần đen, accent xanh trà */
+    --background: 44 33% 95%;        /* #F7F5EF */
+    --foreground: 100 6% 9%;         /* #191B18 */
+    --paper: 0 0% 100%;              /* #FFFFFF */
+    --card: 0 0% 100%;
+    --card-foreground: 100 6% 9%;
+    --muted: 40 6% 92%;
+    --muted-foreground: 60 5% 55%;   /* #8E8F86 */
+    --primary: 124 21% 39%;          /* #4F7A52 xanh trà */
+    --primary-foreground: 0 0% 100%;
+    --accent: 124 21% 39%;
+    --accent-foreground: 0 0% 100%;
+    --border: 42 22% 90%;            /* #EAE7DE */
+    --input: 42 22% 90%;
+    --ring: 124 21% 39%;
+    --radius: 1rem;
+  }
+}
+
+@layer base {
+  * { @apply border-border; }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    letter-spacing: 0.2px;
+  }
+  h1, h2, h3, .font-display {
+    font-family: var(--font-display), Georgia, serif;
+  }
+}
+
+/* Tiện ích reveal-on-scroll dùng kèm Framer Motion fallback */
+.kicker { @apply text-[11px] tracking-[0.35em] uppercase text-primary; }
