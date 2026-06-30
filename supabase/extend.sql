@@ -351,6 +351,10 @@ join orders ord on ord.code = it.code
 join products p on p.name = it.pname
 where not exists (select 1 from order_items oi where oi.order_id = ord.id and oi.product_id = p.id);
 
+-- Đẩy sequence mã đơn vượt qua các mã seed (DH0001..DH0020) để tránh trùng khoá
+select setval('order_code_seq',
+  (select coalesce(max((substring(code from '\d+'))::int), 0) from orders));
+
 -- Nhật ký nhập-xuất kho (mục G)
 insert into inventory_tx (ingredient_id, change, reason, created_at) values
 ('NL001', 1500, 'Nhập PN-20260601-01 (NCC01)','2026-06-01'),
