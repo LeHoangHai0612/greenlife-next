@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Minus, Plus, ShoppingBag, X } from "lucide-react";
 import { cartCount, cartList, cartTotal, useCart } from "@/lib/store/cart";
 import { placeOrderAction, type CheckoutResult } from "@/app/thuc-don/actions";
+import { createClient } from "@/lib/supabase/client";
 import { formatVnd } from "@/lib/utils";
 
 const PAYMENTS = ["Tiền mặt", "QR VNPay", "Momo", "ZaloPay"];
@@ -17,11 +19,18 @@ export function CartBar() {
   const [result, setResult] = useState<CheckoutResult | null>(null);
   const [pending, startTransition] = useTransition();
 
+  const [loggedIn, setLoggedIn] = useState<boolean | null>(null);
+
   const items = useCart((s) => s.items);
   const changeQty = useCart((s) => s.changeQty);
   const clear = useCart((s) => s.clear);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    createClient()
+      .auth.getUser()
+      .then(({ data }) => setLoggedIn(!!data.user));
+  }, []);
   if (!mounted) return null;
 
   const list = cartList(items);
@@ -166,16 +175,32 @@ export function CartBar() {
                         <p className="mt-3 text-center text-sm text-red-600">{result.error}</p>
                       )}
 
-                      <button
-                        disabled={pending}
-                        onClick={checkout}
-                        className="mt-4 w-full rounded-full bg-foreground py-4 text-[12px] uppercase tracking-[0.2em] text-background disabled:opacity-60"
-                      >
-                        {pending ? "Đang xử lý…" : "Đặt hàng"}
-                      </button>
-                      <p className="mt-2 text-center text-[11px] text-muted-foreground">
-                        Đăng nhập trước khi đặt để được tích điểm. Mã giảm giá áp ở bước xác nhận.
-                      </p>
+                      {loggedIn === false ? (
+                        <>
+                          <Link
+                            href="/dang-nhap?next=/thuc-don"
+                            className="mt-4 block w-full rounded-full bg-foreground py-4 text-center text-[12px] uppercase tracking-[0.2em] text-background"
+                          >
+                            Đăng nhập để đặt hàng
+                          </Link>
+                          <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                            Cần đăng nhập để đặt online (và được tích điểm).
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <button
+                            disabled={pending}
+                            onClick={checkout}
+                            className="mt-4 w-full rounded-full bg-foreground py-4 text-[12px] uppercase tracking-[0.2em] text-background disabled:opacity-60"
+                          >
+                            {pending ? "Đang xử lý…" : "Đặt hàng"}
+                          </button>
+                          <p className="mt-2 text-center text-[11px] text-muted-foreground">
+                            Mã giảm giá &amp; điểm được áp khi xác nhận.
+                          </p>
+                        </>
+                      )}
                     </>
                   )}
                 </>

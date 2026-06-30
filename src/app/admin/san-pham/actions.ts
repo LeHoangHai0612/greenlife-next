@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { logAudit } from "@/lib/audit";
 
 export type ProductInput = {
   name: string;
@@ -38,6 +39,7 @@ export async function createProduct(input: ProductInput): Promise<ActionResult> 
     is_active: input.is_active ?? true,
   });
   if (error) return { ok: false, error: error.message };
+  await logAudit("Thêm sản phẩm", "product", input.name);
   refresh();
   return { ok: true };
 }
@@ -59,6 +61,7 @@ export async function updateProduct(id: string, input: ProductInput): Promise<Ac
     })
     .eq("id", id);
   if (error) return { ok: false, error: error.message };
+  await logAudit("Sửa sản phẩm", "product", `${input.name} · ${input.price}đ`);
   refresh();
   return { ok: true };
 }
@@ -67,6 +70,7 @@ export async function toggleActive(id: string, active: boolean): Promise<ActionR
   const supabase = createClient();
   const { error } = await supabase.from("products").update({ is_active: active }).eq("id", id);
   if (error) return { ok: false, error: error.message };
+  await logAudit(active ? "Mở bán sản phẩm" : "Ẩn sản phẩm", "product", id);
   refresh();
   return { ok: true };
 }
@@ -75,6 +79,7 @@ export async function deleteProduct(id: string): Promise<ActionResult> {
   const supabase = createClient();
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
+  await logAudit("Xóa sản phẩm", "product", id);
   refresh();
   return { ok: true };
 }

@@ -17,6 +17,7 @@ import {
   Ticket,
   IdCard,
   Image as ImageIcon,
+  ScrollText,
 } from "lucide-react";
 
 const ITEMS = [
@@ -32,6 +33,7 @@ const ITEMS = [
   { href: "/admin/khuyen-mai", label: "Khuyến mãi", icon: Ticket },
   { href: "/admin/bao-cao", label: "Báo cáo", icon: BarChart3 },
   { href: "/admin/nhan-vien", label: "Nhân viên", icon: IdCard },
+  { href: "/admin/nhat-ky", label: "Nhật ký", icon: ScrollText },
   { href: "/admin/hinh-anh", label: "Ảnh website", icon: ImageIcon },
   { href: "/admin/nhap-lieu", label: "Nhập liệu", icon: Upload },
 ];

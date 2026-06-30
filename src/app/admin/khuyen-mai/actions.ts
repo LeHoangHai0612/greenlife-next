@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { logAudit } from "@/lib/audit";
 
 export type PromoInput = {
   code: string;
@@ -24,6 +25,7 @@ export async function createPromo(input: PromoInput): Promise<Res> {
     active: true,
   });
   if (error) return { ok: false, error: error.message };
+  await logAudit("Thêm khuyến mãi", "promotion", input.code);
   revalidatePath("/admin/khuyen-mai");
   return { ok: true };
 }
@@ -40,6 +42,7 @@ export async function deletePromo(id: string): Promise<Res> {
   const supabase = createClient();
   const { error } = await supabase.from("promotions").delete().eq("id", id);
   if (error) return { ok: false, error: error.message };
+  await logAudit("Xóa khuyến mãi", "promotion", id);
   revalidatePath("/admin/khuyen-mai");
   return { ok: true };
 }

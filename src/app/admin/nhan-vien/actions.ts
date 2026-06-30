@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { logAudit } from "@/lib/audit";
 
 export type Res = { ok: boolean; error?: string };
 
@@ -21,6 +22,7 @@ export async function setRole(userId: string, role: string): Promise<Res> {
 
   const { error } = await supabase.from("profiles").update({ role }).eq("id", userId);
   if (error) return { ok: false, error: error.message };
+  await logAudit("Đổi vai trò", "profile", `${userId} → ${role}`);
   revalidatePath("/admin/nhan-vien");
   return { ok: true };
 }

@@ -1,15 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { type CartItem, cartList, cartCount, cartTotal } from "@/lib/cart-utils";
 
-export type CartItem = {
-  key: string; // variantId nếu có, không thì productId
-  productId: string;
-  variantId: string | null;
-  name: string;
-  label: string | null; // tên size
-  price: number;
-  qty: number;
-};
+export type { CartItem };
+export { cartList, cartCount, cartTotal };
 
 type AddArg = {
   productId: string;
@@ -71,9 +65,3 @@ export const useCart = create<CartState>()(
     { name: "greenlife-cart-v2" },
   ),
 );
-
-export const cartList = (items: Record<string, CartItem>) => Object.values(items);
-export const cartCount = (items: Record<string, CartItem>) =>
-  cartList(items).reduce((t, i) => t + i.qty, 0);
-export const cartTotal = (items: Record<string, CartItem>) =>
-  cartList(items).reduce((t, i) => t + i.qty * i.price, 0);
